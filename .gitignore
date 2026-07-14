@@ -1,0 +1,8 @@
+__pycache__/
+**.pyc
+/data/
+runs/
+wandb/
+**.so
+packages/
+**.egg-info/
