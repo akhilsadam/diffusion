@@ -130,7 +130,7 @@ class FMM(nn.Module):
 
         z = self.fuse(torch.cat([sparse, dense], dim=1))
         
-        z = self.ae.decode(z)
+        z = self.ae.decoder(z)
 
         return z
 
