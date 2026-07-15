@@ -73,7 +73,6 @@ def create_turbulence_loaders(
 
     return train_loader, val_loader, dataset
 
-
 def setup_training(config):
     """Initialize model, data, and metrics."""
 
@@ -197,7 +196,7 @@ if __name__ == "__main__":
         "num_workers": 16,
         "seed": 86,
         "epochs": 100,
-        "lr": 2e-4,
+        "lr": 1e-4,
         "eval_freq": 1,
         "save_dir": "checkpoints",
         "use_wandb": False,

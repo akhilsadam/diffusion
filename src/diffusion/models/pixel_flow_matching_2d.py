@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ae.modules.ae import BasicSpatialAutoencoder
+from ae.modules.spatial import SpatialLayer
 from ae.modules.siren import Siren
 from ae.modules.skip import Skip
 from ae.modules.act import Tri
@@ -26,7 +27,7 @@ class FMM(nn.Module):
     def __init__(self, dim=1, shape=(512, 512), L=1, act=Tri):
         super().__init__()
 
-        self.ae = BasicSpatialAutoencoder(in_dim=dim, encode_layers=3)
+        self.ae = BasicSpatialAutoencoder(in_dim=dim, encode_layers=3, spatial_layer=SpatialLayer)
         self.ae_factor = 8
         in_dim = 1
 
@@ -89,7 +90,7 @@ class FMM(nn.Module):
             antialias=True,
         )
 
-    def buffer(self, shape, L, method="AB5"):
+    def buffer(self, shape, L, method="AB2"):
         """Initialize buffers including spatial grid and spectral derivatives."""
         shape_md = tuple(s // self.ae_factor for s in shape)
 
