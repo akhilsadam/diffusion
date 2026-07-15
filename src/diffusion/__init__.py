@@ -1,6 +1,5 @@
 """Unconditional diffusion models and training infrastructure."""
 from mura.registry import Registry
-from .train import train_diffusion
 
 __version__ = '0.1.0'
 
@@ -12,8 +11,8 @@ def _register_diffusion_models():
     """Register all diffusion models."""
     from .models.spatial_diffusion import SpatialDiffusion, Config as SpatialDiffConfig
 
-    MODEL_REGISTRY.register("spatial_diffusion", SpatialDiffConfig, SpatialDiffusion)
+    MODEL_REGISTRY.register("project_develop.spatial_diffusion", SpatialDiffConfig, SpatialDiffusion)
 
 _register_diffusion_models()
 
-__all__ = ['MODEL_REGISTRY', 'train_diffusion']
+__all__ = ['MODEL_REGISTRY']

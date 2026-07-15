@@ -1,7 +1,7 @@
 """Spatial latent diffusion model following Kaiming He's 'Just Denoise' approach."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Any, Dict
 
 import pytorch_lightning as pl
@@ -9,14 +9,8 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-# Import from ae-core package if available, else provide minimal versions
-try:
-    from ae.modules.ae import BasicSpatialAutoencoder
-    from ae.modules.spatial import SpatialLayer
-except ImportError:
-    # Minimal fallback for testing
-    BasicSpatialAutoencoder = nn.Module
-    SpatialLayer = nn.Module
+from ae.modules.ae import BasicSpatialAutoencoder
+from ae.modules.spatial import SpatialLayer
 
 # Convention: model class is named 'Autoencoder' or endswith 'Autoencoder', config is 'Config' or endswith 'Config'
 
@@ -86,18 +80,18 @@ class SimpleDiffusionTransformer(nn.Module):
 
 class SpatialDiffusion(pl.LightningModule):
     """Latent diffusion model using spatial autoencoder + diffusion transformer."""
-    
+
     def __init__(self, config: Config) -> None:
         super().__init__()
-        
-        self.save_hyperparameters(config)
-        
-        in_channels = config['in_channels']
-        lift_steps = config['lift_steps']
-        encode_layers = config['encode_layers']
-        patch_size = config['patch_size']
-        factor = config['factor']
-        self.learning_rate = config['learning_rate']
+
+        self.save_hyperparameters(asdict(config))
+
+        in_channels = config.in_channels
+        lift_steps = config.lift_steps
+        encode_layers = config.encode_layers
+        patch_size = config.patch_size
+        factor = config.factor
+        self.learning_rate = config.learning_rate
         
         # Autoencoder for latent space
         self.ae = BasicSpatialAutoencoder(
@@ -119,9 +113,9 @@ class SpatialDiffusion(pl.LightningModule):
         )
         
         # Diffusion parameters
-        self.num_steps = config.get('num_diffusion_steps', 10)
-        self.min_noise = config.get('min_noise', 1e-4)
-        self.max_noise = config.get('max_noise', 0.02)
+        self.num_steps = getattr(config, 'num_diffusion_steps', 10)
+        self.min_noise = getattr(config, 'min_noise', 1e-4)
+        self.max_noise = getattr(config, 'max_noise', 0.02)
             
         self.criterion = nn.MSELoss()
     
