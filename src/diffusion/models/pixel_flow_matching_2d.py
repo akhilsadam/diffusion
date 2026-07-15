@@ -117,7 +117,7 @@ class FMM(nn.Module):
     def denoise(self, z: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
         """Denoising network predicting velocity."""
 
-        z = self.ae.encode(z)
+        z = self.ae.encoder(z)
 
         xpe = self.xy.expand(z.shape[0], -1, *z.shape[2:])
         # tpe = self.t_emb(t.expand(z.shape[0], 1, *z.shape[2:]))
