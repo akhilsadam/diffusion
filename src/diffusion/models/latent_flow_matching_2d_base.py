@@ -3,7 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ae.modules.ae import BasicSpatialAutoencoder
-from ae.modules.siren import Siren, Skip
+from ae.modules.siren import Siren
+from ae.modules.skip import Skip
 from ae.modules.act import Tri
 from diffusion.samplers import Euler, AB2, AB5, AB2CN
 from diffusion.modules.embeddings import TimeEmbedding
