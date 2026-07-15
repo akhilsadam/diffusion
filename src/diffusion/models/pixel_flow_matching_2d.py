@@ -152,7 +152,7 @@ class FMM(nn.Module):
 
         n = self.noise(z)
 
-        s = torch.rand(x.shape[0], device=x.device)[:, None, None, None]
+        s = torch.rand(z.shape[0], device=z.device)[:, None, None, None]
         z_n_s = self.mix(z, n, s)
 
         z_hat_s = self.denoise(z_n_s, s)
