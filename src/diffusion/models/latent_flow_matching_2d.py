@@ -50,27 +50,27 @@ class FMM(nn.Module):
         # Interpolation and token processing layers
         self.interp = nn.Sequential(
             nn.Conv2d(c_dim + in_dim, cnn_width, kernel_size=k - 1, padding_mode="circular", padding="same"),
-            activation_fn(),
-            Siren(cnn_width, token_dim, width=cnn_width, layers=2, w=0.5, act=activation_fn, k=3),
-            activation_fn(),
+            act(),
+            Siren(cnn_width, token_dim, width=cnn_width, layers=2, w=0.5, act=act, k=3),
+            act(),
             nn.PixelUnshuffle(k),
         )
 
         # Local and global processing
         self.dense_local_shallow = Siren(
-            k**2 * token_dim, token_dim, width=width, layers=4, w=0.5, act=activation_fn, k=1
+            k**2 * token_dim, token_dim, width=width, layers=4, w=0.5, act=act, k=1
         )
 
         self.sparse_global_deep = nn.Sequential(
-            Siren(k**2 * token_dim, token_dim, width=width, layers=0, w=0.5, act=activation_fn, k=1),
-            activation_fn(),
+            Siren(k**2 * token_dim, token_dim, width=width, layers=0, w=0.5, act=act, k=1),
+            act(),
             nn.PixelUnshuffle(k),
-            Skip(Siren(k**2 * token_dim, k**2 * token_dim, width=width, layers=3, w=0.5, act=activation_fn, k=1)),
+            Skip(Siren(k**2 * token_dim, k**2 * token_dim, width=width, layers=3, w=0.5, act=act, k=1)),
             nn.PixelShuffle(k),
         )
 
         self.fuse = nn.Sequential(
-            Siren(2 * token_dim, token_dim, width=width, layers=1, w=0.5, act=activation_fn, k=3),
+            Siren(2 * token_dim, token_dim, width=width, layers=1, w=0.5, act=act, k=3),
             nn.PixelShuffle(k),
         )
 
