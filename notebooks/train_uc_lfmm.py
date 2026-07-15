@@ -188,7 +188,7 @@ def train(config):
                 f"reco={metrics['loss_reco']:.4f}"
             )
             if metrics["fid"] is not None:
-                print(f"  FID: {metrics['fid']:.4f}")
+                print(f"  FID: {metrics['fid']:.4f}, rFID: {metrics['rfid']:.4f}")
 
             # Checkpoint
             ckpt_path = os.path.join(save_dir, f"model_epoch{epoch}.pth")
