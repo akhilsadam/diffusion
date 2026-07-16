@@ -13,7 +13,7 @@ from diffusion.samplers import Euler, AB2, AB5, AB2CN
 
 def mse_loss_normalized(x_hat, x):
     """Normalized MSE loss (variance-normalized)."""
-    return (x_hat - x).pow(2).mean() / ((x - x.mean(dim=(-2, -1), keepdim=True)).pow(2).mean() + 1e-8)
+    return (x_hat - x).pow(2).mean() / (x.var(dim=(0, -2, -1), keepdim=True) + 1e-8)
 
 
 class FMM(nn.Module):
@@ -89,9 +89,9 @@ class FMM(nn.Module):
             antialias=True,
         )
 
-    def buffer(self, shape, L, method="AB5"):
+    def buffer(self, shape, L, method="AB2"):
         """Initialize buffers including spatial grid and spectral derivatives."""
-        shape_md = tuple(s // self.ae_factor for s in shape)
+        shape_md = tuple(t // self.ae_factor for t in shape)
 
         cell_center = 1 - 1 / shape_md[-1]
         x = torch.frac(torch.linspace(-cell_center, cell_center, shape_md[-1]))
@@ -145,22 +145,22 @@ class FMM(nn.Module):
 
     def vel(self, x_pred, x_n, t):
         """Compute velocity from denoiser prediction (secant method)."""
-        return (x_pred - x_n) / torch.clamp(1 - t, 0.05, 1.0)
+        return (x_pred - x_n) / (1 - t)
 
     def loss(self, z: torch.Tensor):
         """Compute velocity matching loss and reconstruction loss."""
 
         n = self.noise(z)
 
-        s = torch.rand(z.shape[0], device=z.device)[:, None, None, None]
-        z_n_s = self.mix(z, n, s)
+        t = torch.rand(z.shape[0], device=z.device)[:, None, None, None] * 0.95 # avoid singularity
+        z_n = self.mix(z, n, t)
 
-        z_hat_s = self.denoise(z_n_s, s)
+        z_hat = self.denoise(z_n, t)
 
-        v_pred_s = self.vel(z_hat_s, z_n_s, s) * (1 - s)
-        v_true_s = self.vel(z, z_n_s, s) * (1 - s)
+        v_pred = self.vel(z_hat, z_n, t) * (1 - t)
+        v_true = self.vel(z, z_n, t) * (1 - t)
 
-        l_vel = mse_loss_normalized(v_pred_s, v_true_s)
+        l_vel = mse_loss_normalized(v_pred, v_true)
 
         return l_vel
 
