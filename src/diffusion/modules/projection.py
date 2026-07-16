@@ -20,6 +20,8 @@ def DPS(denoise, A, y, gamma):
         
         return x
 
+    return DPS_denoise
+
     # usage
     # fmm = FMM()
     # fmm.denoise = DPS(fmm.denoise, A, y, gamma)
