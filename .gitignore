@@ -7,3 +7,4 @@ wandb/
 packages/
 **.egg-info/
 **.ipynb_checkpoints/
+**checkpoints/
