@@ -90,7 +90,7 @@ class FMM(nn.Module):
             antialias=True,
         )
 
-    def buffer(self, shape, L, method="AB2"):
+    def buffer(self, shape, L, method="AB2", steps=5):
         """Initialize buffers including spatial grid and spectral derivatives."""
         shape_md = tuple(t // self.ae_factor for t in shape)
 
@@ -110,7 +110,7 @@ class FMM(nn.Module):
         self.sampler = samplers[method]()
 
         # Time schedule
-        self.steps = 5
+        self.steps = steps
         lin = torch.linspace(0, 1, self.steps + 1)
         self.register_buffer("t", lin)
         self.register_buffer("dt", self.t[1:] - self.t[:-1])
